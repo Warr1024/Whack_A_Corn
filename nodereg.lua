@@ -31,15 +31,23 @@ minetest.register_node(thismod .. ":smashed_egg", {
 			{0, -0.5, -0.1875, 0.125, -0.375, -0.125}, -- NodeBox9
 			{0.3125, -0.5, 0, 0.4375, -0.4375, 0.0625}, -- NodeBox10
 		}
-	},
-	on_construct = function(pos)
-		local timer = minetest.get_node_timer(pos)
-		timer:start(3)
-	end,
-	on_timer = function(pos)
-		minetest.remove_node(pos)
-	end
+	}
+})
 
+minetest.register_abm({
+	label = "cleanup smashed eggcorns",
+	nodenames = {thismod .. ":smashed_egg"},
+	interval = 1,
+	chance = 1,
+	action = function(pos)
+		local meta = minetest.get_meta(pos)
+		local age = meta:get_int("age") or 0
+		age = age + 1
+		if age >= 3 then
+			return minetest.remove_node(pos)
+		end
+		meta:set_int("age", age + 1)
+	end
 })
 
 minetest.register_node(thismod .. ":stone",{
